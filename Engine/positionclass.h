@@ -37,6 +37,8 @@ public:
 	void TurnRight(bool);
 	void LookUpward(bool);
 	void LookDownward(bool);
+	//Xu. 03/12/2019
+	void MouseRotate(int, int);
 
 private:
 	float m_positionX, m_positionY, m_positionZ;

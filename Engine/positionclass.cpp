@@ -348,3 +348,13 @@ void PositionClass::LookDownward(bool keydown)
 
 	return;
 }
+
+void PositionClass::MouseRotate(int mouseX, int mouseY)
+{
+
+	if ((m_rotationX + mouseY) > 90) m_rotationX = 90;
+	else if ((m_rotationX + mouseY) < -90) m_rotationX = -90;
+	else m_rotationX += mouseY;
+
+	m_rotationY += mouseX;
+}

@@ -22,7 +22,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = false;
+const bool FULL_SCREEN = true;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
@@ -46,7 +46,7 @@ private:
 	//bool Render(float);
 	//Xu
 	bool HandleMovementInput(float);
-	bool Render();
+	bool Render(float rotationRender);
 
 private:
 	InputClass* m_Input;
@@ -65,6 +65,9 @@ private:
 	ModelClass* m_Model7;
 	ModelClass* m_Model8;
 	ModelClass* m_Model9;
+	ModelClass* m_Model10;
+	ModelClass* m_Model11;
+
 	
 };
 

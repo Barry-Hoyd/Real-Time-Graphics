@@ -20,9 +20,9 @@
 ///////////////////////
 // MY CLASS INCLUDES //
 ///////////////////////
-//#include "applicationclass.h"
 #include "inputclass.h"
 #include "graphicsclass.h"
+#include "soundclass.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Class name: SystemClass
@@ -49,12 +49,11 @@ private:
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
-	
-	//ApplicationClass* m_Application;
+
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
+	SoundClass* m_Sound;
 };
-
 
 /////////////////////////
 // FUNCTION PROTOTYPES //

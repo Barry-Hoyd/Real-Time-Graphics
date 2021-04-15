@@ -40,6 +40,13 @@ public:
 
 	void GetMouseLocation(int&, int&);
 
+	//Xu. 03/12/2019
+	void ResetCursorPos();
+	int GetMouseX();
+	int GetMouseY();
+	int GetMouseXDelta();
+	int GetMouseYDelta();
+
 	bool IsEscapePressed();
 	bool IsLeftPressed();
 	bool IsRightPressed();
@@ -64,7 +71,7 @@ private:
 	DIMOUSESTATE m_mouseState;
 
 	int m_screenWidth, m_screenHeight;
-	int m_mouseX, m_mouseY;
+	int m_mouseX, m_mouseY, oldMouseX, oldMouseY;
 };
 
 #endif

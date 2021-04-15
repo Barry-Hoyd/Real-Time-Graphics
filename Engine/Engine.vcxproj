@@ -23,6 +23,7 @@
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="positionclass.h" />
     <ClInclude Include="shadermanagerclass.h" />
+    <ClInclude Include="soundclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textureclass.h" />
     <ClInclude Include="textureshaderclass.h" />
@@ -42,6 +43,7 @@
     <ClCompile Include="modelclass.cpp" />
     <ClCompile Include="positionclass.cpp" />
     <ClCompile Include="shadermanagerclass.cpp" />
+    <ClCompile Include="soundclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
     <ClCompile Include="textureshaderclass.cpp" />
