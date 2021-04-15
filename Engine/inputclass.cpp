@@ -393,3 +393,93 @@ bool InputClass::IsPgDownPressed()
 
 	return false;
 }
+
+bool InputClass::IsSpacebarPressed()
+{
+	if (m_keyboardState[DIK_SPACE] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is1Pressed()
+{
+	if (m_keyboardState[DIK_1] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is2Pressed()
+{
+	if (m_keyboardState[DIK_2] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is3Pressed()
+{
+	if (m_keyboardState[DIK_3] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is4Pressed()
+{
+	if (m_keyboardState[DIK_4] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+bool InputClass::Is5Pressed()
+{
+	if (m_keyboardState[DIK_5] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is6Pressed()
+{
+	if (m_keyboardState[DIK_6] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is7Pressed()
+{
+	if (m_keyboardState[DIK_7] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is8Pressed()
+{
+	if (m_keyboardState[DIK_8] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::Is9Pressed()
+{
+	if (m_keyboardState[DIK_9] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+

@@ -40,7 +40,7 @@ public:
 
 	void GetMouseLocation(int&, int&);
 
-	//Xu. 03/12/2019
+
 	void ResetCursorPos();
 	int GetMouseX();
 	int GetMouseY();
@@ -56,6 +56,16 @@ public:
 	bool IsZPressed();
 	bool IsPgUpPressed();
 	bool IsPgDownPressed();
+	bool IsSpacebarPressed();
+	bool Is1Pressed();
+	bool Is2Pressed();
+	bool Is3Pressed();
+	bool Is4Pressed();
+	bool Is5Pressed();
+	bool Is6Pressed();
+	bool Is7Pressed();
+	bool Is8Pressed();
+	bool Is9Pressed();
 
 private:
 	bool ReadKeyboard();

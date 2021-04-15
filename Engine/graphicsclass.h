@@ -22,7 +22,7 @@
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
@@ -45,8 +45,13 @@ public:
 private:
 	//bool Render(float);
 	//Xu
-	bool HandleMovementInput(float);
+	bool HandleMovementInput(float );
 	bool Render(float rotationRender);
+	float rotation = 0.0f;
+	bool stopRotation = false;
+	//bools for spawning planets once corresponding key is pressed
+	bool onePress = false, twoPress = false, threePress = false, fourPress = false,
+		fivePress = false, sixPress = false, sevenPress = false, eightPress = false, ninePress = false;
 
 private:
 	InputClass* m_Input;
@@ -67,7 +72,7 @@ private:
 	ModelClass* m_Model9;
 	ModelClass* m_Model10;
 	ModelClass* m_Model11;
-
+	ModelClass* m_Model12;
 	
 };
 
