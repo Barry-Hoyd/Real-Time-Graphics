@@ -16,12 +16,15 @@
     <ClInclude Include="cameraclass.h" />
     <ClInclude Include="d3dclass.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="Fontclass.h" />
+    <ClInclude Include="Fontshaderclass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="inputclass.h" />
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="positionclass.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="shadermanagerclass.h" />
     <ClInclude Include="soundclass.h" />
     <ClInclude Include="systemclass.h" />
@@ -35,6 +38,8 @@
     <ClCompile Include="cameraclass.cpp" />
     <ClCompile Include="d3dclass.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="Fontclass.cpp" />
+    <ClCompile Include="Fontshaderclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
     <ClCompile Include="lightclass.cpp" />
@@ -52,10 +57,15 @@
   <ItemGroup>
     <None Include="bumpmap.ps" />
     <None Include="bumpmap.vs" />
+    <None Include="Font.ps" />
+    <None Include="Font.vs" />
     <None Include="light.ps" />
     <None Include="light.vs" />
     <None Include="texture.ps" />
     <None Include="texture.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Engine.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B582C848-8474-42F1-91EE-C5B948FE3486}</ProjectGuid>
