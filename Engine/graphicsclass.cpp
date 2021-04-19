@@ -435,7 +435,7 @@ bool GraphicsClass::Frame()
 
 	// Render the graphics.
 	// Render the graphics scene.
-	result = Render();
+	result = Render(rotation);
 	if (!result)
 	{
 		return false;
@@ -459,28 +459,22 @@ bool GraphicsClass::HandleMovementInput(float frameTime)
 	keyDown = m_Input->IsRightPressed();
 	m_Position->TurnRight(keyDown);
 
-	keyDown = m_Input->IsWPressed();
+	keyDown = m_Input->IsUpPressed();
 	m_Position->MoveForward(keyDown);
 
-	keyDown = m_Input->IsSPressed();
+	keyDown = m_Input->IsDownPressed();
 	m_Position->MoveBackward(keyDown);
 
 	keyDown = m_Input->IsAPressed();
-	m_Position->MoveLeft(keyDown);
-
-	keyDown = m_Input->IsDPressed();
-	m_Position->MoveRight(keyDown);
-
-	keyDown = m_Input->IsEPressed();
 	m_Position->MoveUpward(keyDown);
 
-	keyDown = m_Input->IsQPressed();
+	keyDown = m_Input->IsZPressed();
 	m_Position->MoveDownward(keyDown);
 
-	keyDown = m_Input->IsUpPressed();
+	keyDown = m_Input->IsPgUpPressed();
 	m_Position->LookUpward(keyDown);
 
-	keyDown = m_Input->IsDownPressed();
+	keyDown = m_Input->IsPgDownPressed();
 	m_Position->LookDownward(keyDown);
 
 	if (m_Input->Is1Pressed())
@@ -530,11 +524,11 @@ bool GraphicsClass::HandleMovementInput(float frameTime)
 	
 	if (m_Input->IsSpacebarPressed())
 	{
-		stopOrbit = true;
+		stopRotation = true;
 	}
 	else
 	{
-		stopOrbit = false;
+		stopRotation = false;
 	}
 	//*/
 	// HandleMouse Rotations
@@ -552,19 +546,19 @@ bool GraphicsClass::HandleMovementInput(float frameTime)
 	return true;
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(float rotationRender)
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, translateMatrix;
 	XMMATRIX scale;
 	XMVECTOR MyAxis;
 	bool result;
 	
-	if (!stopOrbit)
+	if (!stopRotation)
 	{
 		// Update the rotation variable each frame.
-		orbitSpeed += (float)XM_PI * 0.0005f * m_Timer->GetTime();
+		rotation += (float)XM_PI * 0.0005f * m_Timer->GetTime();
 	}
-	rotation += (float)XM_PI * 0.0005f * m_Timer->GetTime();
+	
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
@@ -580,62 +574,223 @@ bool GraphicsClass::Render()
 	// Setup the rotation and translation of the 1st model Sun.
 	if (onePress)
 	{
-		RenderPlanets(m_Model1, 10.0f, 0.0f, worldMatrix, viewMatrix, projectionMatrix);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixScaling(10.0f, 10.0f, 10.0f));
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixTranslation(0.0f, 0.0f, 0.0f));
+
+		// Render the 1st model using the texture shader.
+		m_Model1->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model1->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model1->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
+
 	// Setup the rotation and translation of the 2nd model Mercury.
 	if (twoPress)
 	{
-		RenderPlanets(m_Model2, 2.0f, 30.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(2.0f, 2.0f, 2.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(30.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation));
+
+		// Render the 2nd model using the light shader.
+		m_Model2->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model2->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 
 	// Setup the rotation and translation of the 3rd model Venus.
 	if (threePress)
 	{
-		RenderPlanets(m_Model3, 2.5f, 60.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(2.5f, 2.5f, 2.5f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(60.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.95f));
+
+		// Render the 3rd model using the light shader.
+		m_Model3->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model3->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model3->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 	// Setup the rotation and translation of the 4th model Earth.
 	if (fourPress)
 	{
-		RenderPlanets(m_Model4, 3.0f, 90.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(3.0f, 3.0f, 3.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(90.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.9f));
+		// Render the 4th model using the light shader.
+		m_Model4->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model4->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model4->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 	// Setup the rotation and translation of the 5th model Mars.
 	if (fivePress)
 	{
-		RenderPlanets(m_Model5, 2.25f, 120.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(2.25f, 2.25f, 2.25f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(120.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.85f));
+		// Render the 5th model using the light shader.
+		m_Model5->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model5->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model5->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 
 	// Setup the rotation and translation of the 6th model Jupiter.
 	if (sixPress)
 	{
-		RenderPlanets(m_Model6, 8.0f, 150.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(8.0f, 8.0f, 8.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(150.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.80f));
+		// Render the 6th model using the light shader.
+		m_Model6->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model6->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model6->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 
 	// Setup the rotation and translation of the 7th model Saturn.
 	if (sevenPress)
 	{
-		RenderPlanets(m_Model7, 7.0f, 180.0f, worldMatrix, viewMatrix, projectionMatrix);
-		
-		RenderPlanets(m_Model10, 7.50f, 180.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(7.0f, 7.0f, 7.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(180.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.75f));
+		// Render the 7th model using the light shader.
+		m_Model7->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model7->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model7->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
+		// Setup the rotation and translation of the 10th model Saturn Ring.
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(7.50f, 5.0f, 7.50f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(180.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.75f));
+		// Render the 9th model using the light shader.
+		m_Model10->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model10->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model10->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 
 	// Setup the rotation and translation of the 8th model Uranus.
 	if (eightPress)
 	{
-		RenderPlanets(m_Model8, 6.0f, 210.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(6.0f, 6.0f, 6.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationX(45.0f));
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(210.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.70f));
+		// Render the 8th model using the light shader.
+		m_Model8->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model8->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model8->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 	
 
 	// Setup the rotation and translation of the 9th model Neptune.
 	if (ninePress)
 	{
-		RenderPlanets(m_Model9, 5.0f, 240.0f, worldMatrix, viewMatrix, projectionMatrix);
+		m_D3D->GetWorldMatrix(worldMatrix);
+		scale = XMMatrixScaling(5.0f, 5.0f, 5.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+		translateMatrix = XMMatrixTranslation(240.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+		MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+		worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, rotation * 0.65f));
+		// Render the 9th model using the light shader.
+		m_Model9->Render(m_D3D->GetDeviceContext());
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model9->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			m_Model9->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		if (!result)
+		{
+			return false;
+		}
 	}
 
 	// Setup the rotation and translation of the 11thth model Milkyway.
@@ -673,34 +828,6 @@ bool GraphicsClass::Render()
 	}
 	// Present the rendered scene to the screen.
 	m_D3D->EndScene();
-
-	return true;
-}
-
-bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float translateValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
-{
-	bool result;
-	XMMATRIX scale, translateMatrix;
-	XMVECTOR MyAxis;
-
-	m_D3D->GetWorldMatrix(worldMatrix);
-	scale = XMMatrixScaling(scaleAmount,scaleAmount,scaleAmount);
-	worldMatrix = XMMatrixMultiply(worldMatrix, scale);
-	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
-	translateMatrix = XMMatrixTranslation(translateValue,0.0f,0.0f);
-	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
-	MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, orbitSpeed));
-
-	// Render the 2nd model using the light shader.
-	model->Render(m_D3D->GetDeviceContext());
-	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if (!result)
-	{
-		return false;
-	}
 
 	return true;
 }
