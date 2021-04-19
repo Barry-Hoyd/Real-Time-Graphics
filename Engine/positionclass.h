@@ -31,6 +31,8 @@ public:
 
 	void MoveForward(bool);
 	void MoveBackward(bool);
+	void MoveRight(bool);
+	void MoveLeft(bool);
 	void MoveUpward(bool);
 	void MoveDownward(bool);
 	void TurnLeft(bool);
@@ -47,6 +49,7 @@ private:
 	float m_frameTime;
 
 	float m_forwardSpeed, m_backwardSpeed;
+	float m_rightSpeed, m_LeftSpeed;
 	float m_upwardSpeed, m_downwardSpeed;
 	float m_leftTurnSpeed, m_rightTurnSpeed;
 	float m_lookUpSpeed, m_lookDownSpeed;
