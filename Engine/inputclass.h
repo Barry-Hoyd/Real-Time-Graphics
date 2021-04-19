@@ -47,23 +47,16 @@ public:
 	int GetMouseXDelta();
 	int GetMouseYDelta();
 
-	/*Exit application*/
 	bool IsEscapePressed();
-	/*Rotation around Y Axis*/
-	bool IsUpPressed();
-	bool IsDownPressed();
 	bool IsLeftPressed();
 	bool IsRightPressed();
-	/*Movement by WASD*/
-	bool IsWPressed();
-	bool IsSPressed();
+	bool IsUpPressed();
+	bool IsDownPressed();
 	bool IsAPressed();
-	bool IsDPressed();
-	bool IsEPressed();
-	bool IsQPressed();
-	/*Stop planets orbiting*/
+	bool IsZPressed();
+	bool IsPgUpPressed();
+	bool IsPgDownPressed();
 	bool IsSpacebarPressed();
-	/*Spawn Planets*/
 	bool Is1Pressed();
 	bool Is2Pressed();
 	bool Is3Pressed();
