@@ -151,54 +151,6 @@ void PositionClass::MoveBackward(bool keydown)
 	return;
 }
 
-void PositionClass::MoveRight(bool keydown)
-{
-	if (keydown)
-	{
-		m_rightSpeed += m_frameTime * 0.003f;
-
-		if (m_rightSpeed > (m_frameTime * 0.03f))
-		{
-			m_rightSpeed = m_frameTime * 0.03f;
-		}
-	}
-	else
-	{
-		m_rightSpeed -= m_frameTime * 0.002f;
-
-		if (m_rightSpeed < 0.0f)
-		{
-			m_rightSpeed = 0.0f;
-		}
-	}
-
-	m_positionX += m_rightSpeed;
-}
-
-void PositionClass::MoveLeft(bool keydown)
-{
-	if (keydown)
-	{
-		m_LeftSpeed += m_frameTime * 0.003f;
-
-		if (m_LeftSpeed > (m_frameTime * 0.03f))
-		{
-			m_LeftSpeed = m_frameTime * 0.03f;
-		}
-	}
-	else
-	{
-		m_LeftSpeed -= m_frameTime * 0.002f;
-
-		if (m_LeftSpeed < 0.0f)
-		{
-			m_LeftSpeed = 0.0f;
-		}
-	}
-
-	m_positionX -= m_LeftSpeed;
-}
-
 
 void PositionClass::MoveUpward(bool keydown)
 {
