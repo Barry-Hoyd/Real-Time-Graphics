@@ -11,6 +11,7 @@
 #include "d3dclass.h"
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
+#include "skydomeshaderclass.h"
 #include "bumpmapshaderclass.h"
 
 
@@ -35,10 +36,12 @@ public:
 	bool RenderBumpMapShader(ID3D11DeviceContext*, int, const XMMATRIX&, const XMMATRIX&, const XMMATRIX&, ID3D11ShaderResourceView*,
 		ID3D11ShaderResourceView*, XMFLOAT3, XMFLOAT4);
 
+	bool RenderSkyDomeShader(ID3D11DeviceContext*, int, XMMATRIX, XMMATRIX, XMMATRIX, XMFLOAT4, XMFLOAT4);
 private:
 	TextureShaderClass* m_TextureShader;
 	LightShaderClass* m_LightShader;
 	BumpMapShaderClass* m_BumpMapShader;
+	SkyDomeShaderClass* m_SkyDomeShader;
 };
 
 #endif

@@ -8,19 +8,16 @@
 /////////////
 // LINKING //
 /////////////
-#pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "d3dcompiler.lib")
-#pragma comment(lib, "dxguid.lib")
-#pragma comment(lib, "winmm.lib")
+
 
 //////////////
 // INCLUDES //
 //////////////
-#include <dxgi.h>
-#include <d3d11_1.h>
-#include <DirectXMath.h>
-
+#include <d3d11.h>
+#include <directxmath.h>
 using namespace DirectX;
 
 
@@ -36,7 +33,7 @@ public:
 
 	bool Initialize(int, int, bool, HWND, bool, float, float);
 	void Shutdown();
-	
+
 	void BeginScene(float, float, float, float);
 	void EndScene();
 
@@ -48,6 +45,19 @@ public:
 	void GetOrthoMatrix(XMMATRIX&);
 
 	void GetVideoCardInfo(char*, int&);
+
+	void TurnZBufferOn();
+	void TurnZBufferOff();
+
+	void TurnOnCulling();
+	void TurnOffCulling();
+
+	void EnableAlphaBlending();
+	void EnableAlphaToCoverageBlending();
+	void DisableAlphaBlending();
+
+	void EnableWireframe();
+	void DisableWireframe();
 
 private:
 	bool m_vsync_enabled;
@@ -61,10 +71,15 @@ private:
 	ID3D11DepthStencilState* m_depthStencilState;
 	ID3D11DepthStencilView* m_depthStencilView;
 	ID3D11RasterizerState* m_rasterState;
-
+	ID3D11RasterizerState* m_rasterStateNoCulling;
+	ID3D11RasterizerState* m_rasterStateWireframe;
 	XMMATRIX m_projectionMatrix;
 	XMMATRIX m_worldMatrix;
 	XMMATRIX m_orthoMatrix;
+	ID3D11DepthStencilState* m_depthDisabledStencilState;
+	ID3D11BlendState* m_alphaEnableBlendingState;
+	ID3D11BlendState* m_alphaDisableBlendingState;
+	ID3D11BlendState* m_alphaEnableBlendingState2;
 };
 
 #endif

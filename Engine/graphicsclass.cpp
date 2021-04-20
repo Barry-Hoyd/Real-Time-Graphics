@@ -106,6 +106,21 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 	m_Position->SetPosition(0.0f, 0.0f, -40.0f);
 	m_Position->SetRotation(0.0f, 0.0f, 0.0f);
 
+	// Create the sky dome object.
+	m_SkyDome = new SkyDomeClass;
+	if (!m_SkyDome)
+	{
+		return false;
+	}
+
+	// Initialize the sky dome object.
+	result = m_SkyDome->Initialize(m_D3D->GetDevice());
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the sky dome object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the camera object.
 	m_Camera = new CameraClass;
 	if(!m_Camera)
@@ -126,20 +141,29 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 	// Initialize the light object.
     m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 20.0f);
+	m_Light->SetDirection(0.0f, 0.0f, 100.0F);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(128.0f);
 
+	InitializePlanets(hinstance, hwnd, screenWidth, screenHeight);
+
+
+	return true;
+}
+
+bool GraphicsClass::InitializePlanets(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
+{
+	bool result;
 	// Create the model object.
 	m_Model1 = new ModelClass;
-	if(!m_Model1)
+	if (!m_Model1)
 	{
 		return false;
 	}
 
 	// Initialize the model object.
 	result = m_Model1->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere1.txt", L"../Engine/data/sun.dds");
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the first model object.", L"Error", MB_OK);
 		return false;
@@ -147,14 +171,14 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 
 	// Create the second model object.
 	m_Model2 = new ModelClass;
-	if(!m_Model2)
+	if (!m_Model2)
 	{
 		return false;
 	}
 
 	// Initialize the second model object.
 	result = m_Model2->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere1.txt", L"../Engine/data/mercury.dds");
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the second model object.", L"Error", MB_OK);
 		return false;
@@ -162,14 +186,14 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 
 	// Create the third bump model object for models with normal maps and related vectors.
 	m_Model3 = new ModelClass;
-	if(!m_Model3)
+	if (!m_Model3)
 	{
 		return false;
 	}
 
 	// Initialize the bump model object.
 	result = m_Model3->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere1.txt", L"../Engine/data/venus.dds");
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the third model object.", L"Error", MB_OK);
 		return false;
@@ -312,6 +336,14 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 
 void GraphicsClass::Shutdown()
 {
+	// Release the sky dome object.
+	if (m_SkyDome)
+	{
+		m_SkyDome->Shutdown();
+		delete m_SkyDome;
+		m_SkyDome = 0;
+	}
+
 	// Release the model objects.
 	if(m_Model1)
 	{
@@ -400,7 +432,6 @@ bool GraphicsClass::Frame()
 {
 	bool result;
 	static float rotation = 0.0f;
-
 
 	// Update the rotation variable each frame.
 	rotation += (float)XM_PI * 0.005f;
@@ -557,6 +588,8 @@ bool GraphicsClass::Render()
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, translateMatrix;
 	XMMATRIX scale;
 	XMVECTOR MyAxis;
+	XMFLOAT3 cameraPosition;
+
 	bool result;
 	
 	if (!stopOrbit)
@@ -565,17 +598,45 @@ bool GraphicsClass::Render()
 		orbitSpeed += (float)XM_PI * 0.0005f * m_Timer->GetTime();
 	}
 	rotation += (float)XM_PI * 0.0005f * m_Timer->GetTime();
-
-	// Clear the buffers to begin the scene.
-	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
-
-	// Generate the view matrix based on the camera's position.
+	
 	m_Camera->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
+	// Get the position of the camera.
+
+	cameraPosition = m_Camera->GetPosition();
+	// Clear the buffers to begin the scene.
+	m_D3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
+
+	// Turn off back face culling and turn off the Z buffer.
+	m_D3D->TurnOffCulling();
+	m_D3D->TurnZBufferOff();
+
+	// Translate the sky dome to be centered around the camera position.
+	worldMatrix = XMMatrixTranslation(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+	// Render the sky dome using the sky dome shader.
+	m_SkyDome->Render(m_D3D->GetDeviceContext());
+	result = m_ShaderManager->RenderSkyDomeShader(m_D3D->GetDeviceContext(), m_SkyDome->GetIndexCount(), worldMatrix, viewMatrix,
+		projectionMatrix, m_SkyDome->GetApexColor(), m_SkyDome->GetCenterColor());
+	if (!result)
+	{
+		return false;
+	}
+
+	// Reset the world matrix.
+	m_D3D->GetWorldMatrix(worldMatrix);
+
+	// Turn the Z buffer back and back face culling on.
+	m_D3D->TurnZBufferOn();
+	m_D3D->TurnOnCulling();
+	// Translate the sky dome to be centered around the camera position.
+	worldMatrix = XMMatrixTranslation(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+
+
 
 	// Setup the rotation and translation of the 1st model Sun.
 	if (onePress)

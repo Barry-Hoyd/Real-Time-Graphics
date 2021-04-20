@@ -9,6 +9,7 @@ ShaderManagerClass::ShaderManagerClass()
 	m_TextureShader = 0;
 	m_LightShader = 0;
 	m_BumpMapShader = 0;
+	m_SkyDomeShader = 0;
 }
 
 
@@ -57,6 +58,20 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 		return false;
 	}
 
+	// Create the sky dome shader object.
+	m_SkyDomeShader = new SkyDomeShaderClass;
+	if (!m_SkyDomeShader)
+	{
+		return false;
+	}
+
+	// Initialize the sky dome shader object.
+	result = m_SkyDomeShader->Initialize(device, hwnd);
+	if (!result)
+	{
+		return false;
+	}
+
 	// Create the bump map shader object.
 	m_BumpMapShader = new BumpMapShaderClass;
 	if(!m_BumpMapShader)
@@ -84,6 +99,14 @@ void ShaderManagerClass::Shutdown()
 		m_BumpMapShader->Shutdown();
 		delete m_BumpMapShader;
 		m_BumpMapShader = 0;
+	}
+
+	// Release the sky dome shader object.
+	if (m_SkyDomeShader)
+	{
+		m_SkyDomeShader->Shutdown();
+		delete m_SkyDomeShader;
+		m_SkyDomeShader = 0;
 	}
 
 	// Release the light shader object.
@@ -157,4 +180,10 @@ bool ShaderManagerClass::RenderBumpMapShader(ID3D11DeviceContext* deviceContext,
 	}
 
 	return true;
+}
+
+bool ShaderManagerClass::RenderSkyDomeShader(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
+	XMMATRIX projectionMatrix, XMFLOAT4 apexColor, XMFLOAT4 centerColor)
+{
+	return m_SkyDomeShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, apexColor, centerColor);
 }

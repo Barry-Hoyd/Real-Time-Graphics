@@ -17,6 +17,7 @@
 #include "lightclass.h"
 #include "modelclass.h"
 #include "bumpmodelclass.h"
+#include "Skydomeclass.h"
 
 
 /////////////
@@ -39,6 +40,7 @@ public:
 	~GraphicsClass();
 
 	bool Initialize(HINSTANCE, HWND, int, int);
+	bool InitializePlanets(HINSTANCE, HWND, int, int);
 	void Shutdown();
 	bool Frame();
 	bool RenderPlanets();
@@ -76,6 +78,8 @@ private:
 	ModelClass* m_Model10;
 	ModelClass* m_Model11;
 	ModelClass* m_Model12;
+
+	SkyDomeClass* m_SkyDome;
 	
 };
 
