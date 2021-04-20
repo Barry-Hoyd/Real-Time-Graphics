@@ -580,62 +580,62 @@ bool GraphicsClass::Render()
 	// Setup the rotation and translation of the 1st model Sun.
 	if (onePress)
 	{
-		RenderPlanets(m_Model1, 10.0f, 0.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model1, 10.0f, 0.0f, 1.0f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 	// Setup the rotation and translation of the 2nd model Mercury.
 	if (twoPress)
 	{
-		RenderPlanets(m_Model2, 2.0f, 30.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model2, 2.0f, 30.0f, 1.0f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 
 	// Setup the rotation and translation of the 3rd model Venus.
 	if (threePress)
 	{
-		RenderPlanets(m_Model3, 2.5f, 60.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model3, 2.5f, 60.0f, 0.95f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 	// Setup the rotation and translation of the 4th model Earth.
 	if (fourPress)
 	{
-		RenderPlanets(m_Model4, 3.0f, 90.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model4, 3.0f, 90.0f, 0.90f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 	// Setup the rotation and translation of the 5th model Mars.
 	if (fivePress)
 	{
-		RenderPlanets(m_Model5, 2.25f, 120.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model5, 2.25f, 120.0f, 0.85f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 
 	// Setup the rotation and translation of the 6th model Jupiter.
 	if (sixPress)
 	{
-		RenderPlanets(m_Model6, 8.0f, 150.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model6, 8.0f, 150.0f, 0.80f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 
 	// Setup the rotation and translation of the 7th model Saturn.
 	if (sevenPress)
 	{
-		RenderPlanets(m_Model7, 7.0f, 180.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model7, 7.0f, 180.0f, 0.75f, worldMatrix, viewMatrix, projectionMatrix);
 		
-		RenderPlanets(m_Model10, 7.50f, 180.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model10, 7.50f, 180.0f, 0.75f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 
 	// Setup the rotation and translation of the 8th model Uranus.
 	if (eightPress)
 	{
-		RenderPlanets(m_Model8, 6.0f, 210.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model8, 6.0f, 210.0f, 0.70f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 
 	// Setup the rotation and translation of the 9th model Neptune.
 	if (ninePress)
 	{
-		RenderPlanets(m_Model9, 5.0f, 240.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderPlanets(m_Model9, 5.0f, 240.0f, 0.65f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 
 	// Setup the rotation and translation of the 11thth model Milkyway.
@@ -677,7 +677,7 @@ bool GraphicsClass::Render()
 	return true;
 }
 
-bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float translateValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float translateValue, float orbitOffset, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
 	bool result;
 	XMMATRIX scale, translateMatrix;
@@ -690,7 +690,7 @@ bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float tr
 	translateMatrix = XMMatrixTranslation(translateValue,0.0f,0.0f);
 	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
 	MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, orbitSpeed));
+	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, orbitSpeed * orbitOffset));
 
 	// Render the 2nd model using the light shader.
 	model->Render(m_D3D->GetDeviceContext());

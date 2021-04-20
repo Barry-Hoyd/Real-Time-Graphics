@@ -66,13 +66,7 @@
     <ClInclude Include="soundclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Fontclass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Fontshaderclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,12 +125,6 @@
     <ClCompile Include="soundclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fontclass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Fontshaderclass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="bumpmap.ps">
@@ -155,12 +143,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="texture.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Font.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Font.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
