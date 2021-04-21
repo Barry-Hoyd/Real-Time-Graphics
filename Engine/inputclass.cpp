@@ -503,3 +503,39 @@ bool InputClass::Is9Pressed()
 	return false;
 }
 
+bool InputClass::IsF1Pressed()
+{
+	if (m_keyboardState[DIK_F1] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::IsF2Pressed()
+{
+	if (m_keyboardState[DIK_F2] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::IsF3Pressed()
+{
+	if (m_keyboardState[DIK_F3] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool InputClass::IsF4Pressed()
+{
+	if (m_keyboardState[DIK_F4] & 0x80)
+	{
+		return true;
+	}
+	return false;
+}
+

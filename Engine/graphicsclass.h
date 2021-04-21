@@ -58,7 +58,8 @@ private:
 	//bools for spawning planets once corresponding key is pressed
 	bool onePress = false, twoPress = false, threePress = false, fourPress = false,
 		fivePress = false, sixPress = false, sevenPress = false, eightPress = false, ninePress = false;
-
+	bool f1Pressed = false, f2Pressed = false, f3Pressed = false, f4Pressed = false;
+	bool canMove = true, inViewpoint2 = false, inViewpoint3 = false;
 private:
 	InputClass* m_Input;
 	D3DClass* m_D3D;

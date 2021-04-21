@@ -74,6 +74,12 @@ public:
 	bool Is8Pressed();
 	bool Is9Pressed();
 
+	/*Function controls*/
+	bool IsF1Pressed();
+	bool IsF2Pressed();
+	bool IsF3Pressed();
+	bool IsF4Pressed();
+
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();

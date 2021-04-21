@@ -99,8 +99,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	{
 		// If the shader failed to compile it should have writen something to the error message.
 		if(errorMessage)
-		{
-			OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
+		{OutputShaderErrorMessage(errorMessage, hwnd, vsFilename);
 		}
 		// If there was nothing in the error message then it simply could not find the shader file itself.
 		else

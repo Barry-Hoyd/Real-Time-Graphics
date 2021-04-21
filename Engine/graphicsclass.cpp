@@ -469,37 +469,53 @@ bool GraphicsClass::HandleMovementInput(float frameTime)
 
 	// Set the frame time for calculating the updated position.
 	m_Position->SetFrameTime(frameTime);
+	if (canMove)
+	{
+		// Handle the input.
+		keyDown = m_Input->IsLeftPressed();
+		m_Position->TurnLeft(keyDown);
 
-	// Handle the input.
-	keyDown = m_Input->IsLeftPressed();
-	m_Position->TurnLeft(keyDown);
+		keyDown = m_Input->IsRightPressed();
+		m_Position->TurnRight(keyDown);
 
-	keyDown = m_Input->IsRightPressed();
-	m_Position->TurnRight(keyDown);
+		keyDown = m_Input->IsWPressed();
+		m_Position->MoveForward(keyDown);
 
-	keyDown = m_Input->IsWPressed();
-	m_Position->MoveForward(keyDown);
+		keyDown = m_Input->IsSPressed();
+		m_Position->MoveBackward(keyDown);
 
-	keyDown = m_Input->IsSPressed();
-	m_Position->MoveBackward(keyDown);
+		keyDown = m_Input->IsAPressed();
+		m_Position->MoveLeft(keyDown);
 
-	keyDown = m_Input->IsAPressed();
-	m_Position->MoveLeft(keyDown);
+		keyDown = m_Input->IsDPressed();
+		m_Position->MoveRight(keyDown);
 
-	keyDown = m_Input->IsDPressed();
-	m_Position->MoveRight(keyDown);
+		keyDown = m_Input->IsEPressed();
+		m_Position->MoveUpward(keyDown);
 
-	keyDown = m_Input->IsEPressed();
-	m_Position->MoveUpward(keyDown);
+		keyDown = m_Input->IsQPressed();
+		m_Position->MoveDownward(keyDown);
 
-	keyDown = m_Input->IsQPressed();
-	m_Position->MoveDownward(keyDown);
+		keyDown = m_Input->IsUpPressed();
+		m_Position->LookUpward(keyDown);
 
-	keyDown = m_Input->IsUpPressed();
-	m_Position->LookUpward(keyDown);
+		keyDown = m_Input->IsDownPressed();
+		m_Position->LookDownward(keyDown);
 
-	keyDown = m_Input->IsDownPressed();
-	m_Position->LookDownward(keyDown);
+		//*/
+		// HandleMouse Rotations
+		m_Position->MouseRotate(m_Input->GetMouseXDelta(), m_Input->GetMouseYDelta());
+
+		// Get the view point position/rotation.
+		m_Position->GetPosition(posX, posY, posZ);
+		m_Position->GetRotation(rotX, rotY, rotZ);
+		m_Input->ResetCursorPos();
+
+		// Set the position of the camera.
+		m_Camera->SetPosition(posX, posY, posZ);
+		m_Camera->SetRotation(rotX, rotY, rotZ);
+	}
+	
 
 	if (m_Input->Is1Pressed())
 	{
@@ -552,21 +568,34 @@ bool GraphicsClass::HandleMovementInput(float frameTime)
 	}
 	else
 	{
-		stopOrbit = false;
+		//stopOrbit = false;
 	}
-	//*/
-	// HandleMouse Rotations
-	m_Position->MouseRotate(m_Input->GetMouseXDelta(), m_Input->GetMouseYDelta());
 
-	// Get the view point position/rotation.
-	m_Position->GetPosition(posX, posY, posZ);
-	m_Position->GetRotation(rotX, rotY, rotZ);
-	m_Input->ResetCursorPos();
 
-	// Set the position of the camera.
-	m_Camera->SetPosition(posX, posY, posZ);
-	m_Camera->SetRotation(rotX, rotY, rotZ);
+	if (m_Input->IsF1Pressed())
+	{
+		stopOrbit = false;
+		inViewpoint2 = false;
+		inViewpoint3 = false;
+		canMove = true;
+	}
 
+	if (m_Input->IsF2Pressed())
+	{
+		canMove = false;
+		stopOrbit = true;
+		inViewpoint2 = true;
+		inViewpoint3 = false;
+	}
+
+	if (m_Input->IsF3Pressed())
+	{
+		canMove = true;
+		inViewpoint2 = false;
+		inViewpoint3 = true;
+		
+		//canMove = false;
+	}
 	return true;
 }
 
@@ -584,6 +613,18 @@ bool GraphicsClass::Render()
 		// Update the rotation variable each frame.
 		orbitSpeed += (float)XM_PI * 0.0005f * m_Timer->GetTime();
 	}
+	if (inViewpoint2)
+	{
+		m_Camera->SetPosition(0.0f, 300.0f, 0.0f);
+		m_Camera->SetRotation(90.0f, rotation, 0.0f);
+	}
+	if (inViewpoint3)
+	{
+		m_Camera->SetPosition(300.0f, 200.0f, 100.0f);
+		m_Camera->SetRotation(45.0f, 240.0f, 210.0f);
+	}
+		
+	
 	rotation += (float)XM_PI * 0.0005f * m_Timer->GetTime();
 	
 	m_Camera->Render();
@@ -720,9 +761,10 @@ bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float tr
 
 	// Render the 2nd model using the light shader.
 	model->Render(m_D3D->GetDeviceContext());
-	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+	/*result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 		model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());*/
+	result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTexture());
 	if (!result)
 	{
 		return false;
