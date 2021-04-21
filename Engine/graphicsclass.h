@@ -51,6 +51,7 @@ private:
 	bool HandleMovementInput(float );
 	bool Render();
 	bool RenderPlanets(ModelClass* model, float scaleAmount, float translateValue, float orbitOffset, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+	bool RenderShips(ModelClass* model, float scaleAmount, float xValue, float yValue, float zValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 	float rotation = 0.0f;
 	float orbitSpeed = 0.0f;
 	bool stopOrbit = false;

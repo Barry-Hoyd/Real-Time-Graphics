@@ -141,7 +141,7 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 	// Initialize the light object.
     m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 100.0F);
+	m_Light->SetDirection(0.0, 0.0f, -100.0F);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(128.0f);
 
@@ -311,26 +311,13 @@ bool GraphicsClass::InitializePlanets(HINSTANCE hinstance, HWND hwnd, int screen
 		return false;
 	}
 	// Initialize the 11th model object.
-	result = m_Model11->Initialize(m_D3D->GetDevice(), "../Engine/data/Iceland.txt", L"../Engine/data/milkyWay.dds");
+	result = m_Model11->Initialize(m_D3D->GetDevice(), "../Engine/data/spaceship.txt", L"../Engine/data/metal.dds");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the 11th model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	// Create the 12th model object.
-	m_Model12 = new ModelClass;
-	if (!m_Model12)
-	{
-		return false;
-	}
-	// Initialize the 11th model object.
-	result = m_Model12->Initialize(m_D3D->GetDevice(), "../Engine/data/spaceship.txt", L"../Engine/data/metal.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the 12th model object.", L"Error", MB_OK);
-		return false;
-	}
 	return true;
 }
 
@@ -699,40 +686,18 @@ bool GraphicsClass::Render()
 		RenderPlanets(m_Model9, 5.0f, 240.0f, 0.65f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 
-	// Setup the rotation and translation of the 11thth model Milkyway.
-	worldMatrix = XMMatrixIdentity();
-	worldMatrix = XMMatrixScaling(10.0f, 3.0f, 10.0f);
-	translateMatrix = XMMatrixTranslation(0.0f, -50.0f, 200.0f);
-	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+	//side 2 side
+	RenderShips(m_Model11, 1.0f, 0.0f + cos(timeGetTime() / 500.0f) * 200, 100.0f, 150.0f, worldMatrix, viewMatrix, projectionMatrix);
+	RenderShips(m_Model11, 1.0f, 0.0f + cos(timeGetTime() / 500.0f) * 200, 100.0f, 175.0f, worldMatrix, viewMatrix, projectionMatrix);
+	RenderShips(m_Model11, 1.0f, 0.0f + cos(timeGetTime() / 500.0f) * 200, 100.0f, 200.0f, worldMatrix, viewMatrix, projectionMatrix);
 
-	// Render the first model using the texture shader.
-	m_Model11->Render(m_D3D->GetDeviceContext());
-	result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), m_Model11->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_Model11->GetTexture());
-	if (!result)
-	{
-		return false;
-	}
+	//up down
+	RenderShips(m_Model11, 1.0f, 100.0f, 0.0f + cos(timeGetTime() / 500.0f) * 50, 150.0f, worldMatrix, viewMatrix, projectionMatrix);
+	RenderShips(m_Model11, 1.0f, 100.0f, 0.0f + cos(timeGetTime() / 500.0f) * 50, 175.0f, worldMatrix, viewMatrix, projectionMatrix);
+	RenderShips(m_Model11, 1.0f, 100.0f, 0.0f + cos(timeGetTime() / 500.0f) * 50, 200.0f, worldMatrix, viewMatrix, projectionMatrix);
 
-	// Setup the rotation and translation of the 12th model Spaceship.
-	bool movingForward = true;
-	m_D3D->GetWorldMatrix(worldMatrix);
-	scale = XMMatrixScaling(1.0f, 1.0f, 1.0f);
-	worldMatrix = XMMatrixMultiply(worldMatrix, scale);
-	
-	translateMatrix = XMMatrixTranslation(0.0f + cos(timeGetTime() / 500.0f) * 50, 0.0f + cos(timeGetTime() / 500.0f) * 10, 200.0f);
-	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
-	//worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
-	// Render the 9th model using the light shader.
-	m_Model12->Render(m_D3D->GetDeviceContext());
-	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), m_Model12->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		m_Model12->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
-	if (!result)
-	{
-		return false;
-	}
-	// Present the rendered scene to the screen.
+	//all directions
+	RenderShips(m_Model11, 1.0f, 0.0f + cos(timeGetTime() / 500.0f) * 50, 0.0f + cos(timeGetTime() / 500.0f) * 10, 200.0f, worldMatrix, viewMatrix, projectionMatrix);
 	m_D3D->EndScene();
 
 	return true;
@@ -758,6 +723,34 @@ bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float tr
 	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 		model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
 		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool GraphicsClass::RenderShips(ModelClass* model, float scaleAmount, float xValue, float yValue, float zValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+	bool result;
+	XMMATRIX scale, translateMatrix;
+	XMVECTOR vWorldMatrix;
+	XMFLOAT4 fPos;
+	float xPos, yPos, zPos;
+
+	m_D3D->GetWorldMatrix(worldMatrix);
+	scale = XMMatrixScaling(scaleAmount, scaleAmount, scaleAmount);
+	worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+
+	translateMatrix = XMMatrixTranslation(xValue, yValue, zValue);
+	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+
+	model->Render(m_D3D->GetDeviceContext());
+	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
 	if (!result)
 	{
 		return false;
