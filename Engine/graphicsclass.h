@@ -60,6 +60,7 @@ private:
 		fivePress = false, sixPress = false, sevenPress = false, eightPress = false, ninePress = false;
 	bool f1Pressed = false, f2Pressed = false, f3Pressed = false, f4Pressed = false;
 	bool canMove = true, inViewpoint2 = false, inViewpoint3 = false;
+	bool renderSpecular = false;
 private:
 	InputClass* m_Input;
 	D3DClass* m_D3D;

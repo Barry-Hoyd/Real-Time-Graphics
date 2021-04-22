@@ -141,7 +141,7 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 	// Initialize the light object.
     m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0, 0.0f, -100.0F);
+	m_Light->SetDirection(0.0, 0.0f, 100.0F);
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(128.0f);
 
@@ -596,6 +596,15 @@ bool GraphicsClass::HandleMovementInput(float frameTime)
 		
 		//canMove = false;
 	}
+
+	if (m_Input->IsF4Pressed())
+	{
+		renderSpecular = true;
+	}
+	else
+	{
+		renderSpecular = false;
+	}
 	return true;
 }
 
@@ -761,10 +770,19 @@ bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float tr
 
 	// Render the 2nd model using the light shader.
 	model->Render(m_D3D->GetDeviceContext());
-	/*result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+
+	if (!renderSpecular)
+	{
+		result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTexture());
+	}
+	else
+	{
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
 		model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());*/
-	result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTexture());
+		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+	}
+	
+	
 	if (!result)
 	{
 		return false;
@@ -789,9 +807,18 @@ bool GraphicsClass::RenderShips(ModelClass* model, float scaleAmount, float xVal
 	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
 
 	model->Render(m_D3D->GetDeviceContext());
-	result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-		model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
-		m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+
+	if (!renderSpecular)
+	{
+		result = m_ShaderManager->RenderTextureShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTexture());
+	}
+	else
+	{
+		result = m_ShaderManager->RenderLightShader(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+			model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+			m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
+	}
+	
 
 	if (!result)
 	{
