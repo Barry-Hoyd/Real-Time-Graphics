@@ -27,6 +27,7 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
+	
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -84,6 +85,18 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bump map shader object.", L"Error", MB_OK);
+		return false;
+	}
+
+	m_FireShader = new FireShaderClass;
+	if (!m_FireShader)
+	{
+		return false;
+	}
+	result = m_FireShader->Initialize(device, hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the fire shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -186,4 +199,25 @@ bool ShaderManagerClass::RenderSkyDomeShader(ID3D11DeviceContext* deviceContext,
 	XMMATRIX projectionMatrix, XMFLOAT4 apexColor, XMFLOAT4 centerColor)
 {
 	return m_SkyDomeShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, apexColor, centerColor);
+}
+
+bool ShaderManagerClass::RenderFireShader(ID3D11DeviceContext* deviceContext, int indexCount, const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix,
+	const XMMATRIX& projectionMatrix, ID3D11ShaderResourceView* fireTexture,
+	ID3D11ShaderResourceView* noiseTexture, ID3D11ShaderResourceView* alphaTexture, float frameTime,
+	XMFLOAT3 scrollSpeeds, XMFLOAT3 scales, XMFLOAT2 distortion1, XMFLOAT2 distortion2,
+	XMFLOAT2 distortion3, float distortionScale, float distortionBias)
+{
+	bool result;
+
+
+	// Render the model using the fire shader.
+	result = m_FireShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2,
+		distortion3, distortionScale, distortionBias);
+
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
 }

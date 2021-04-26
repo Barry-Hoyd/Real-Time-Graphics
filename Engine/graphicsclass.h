@@ -18,12 +18,13 @@
 #include "modelclass.h"
 #include "bumpmodelclass.h"
 #include "Skydomeclass.h"
+#include "firemodelclass.h"
 
 
 /////////////
 // GLOBALS //
 /////////////
-const bool FULL_SCREEN = true;
+const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
@@ -43,7 +44,6 @@ public:
 	bool InitializePlanets(HINSTANCE, HWND, int, int);
 	void Shutdown();
 	bool Frame();
-	bool RenderPlanets();
 
 private:
 	//bool Render(float);
@@ -51,6 +51,7 @@ private:
 	bool HandleMovementInput(float );
 	bool Render();
 	bool RenderPlanets(ModelClass* model, float scaleAmount, float translateValue, float orbitOffset, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
+	bool RenderSun(float scaleAmount, float translateValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 	bool RenderShips(ModelClass* model, float scaleAmount, float xValue, float yValue, float zValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix);
 	float rotation = 0.0f;
 	float orbitSpeed = 0.0f;
@@ -81,7 +82,7 @@ private:
 	ModelClass* m_Model10;
 	ModelClass* m_Model11;
 	ModelClass* m_Model12;
-
+	FireModelClass* m_ModelSun;
 	SkyDomeClass* m_SkyDome;
 	
 };

@@ -52,6 +52,10 @@ public:
 	void TurnOnCulling();
 	void TurnOffCulling();
 
+	void TurnOnAlphaBlending();
+
+	void TurnOffAlphaBlending();
+
 	void EnableAlphaBlending();
 	void EnableAlphaToCoverageBlending();
 	void DisableAlphaBlending();

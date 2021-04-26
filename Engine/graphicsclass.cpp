@@ -154,6 +154,7 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 bool GraphicsClass::InitializePlanets(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	bool result;
+
 	// Create the model object.
 	m_Model1 = new ModelClass;
 	if (!m_Model1)
@@ -315,6 +316,22 @@ bool GraphicsClass::InitializePlanets(HINSTANCE hinstance, HWND hwnd, int screen
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the 11th model object.", L"Error", MB_OK);
+		return false;
+	}
+	
+	// Create the fourth fire model object.
+	m_ModelSun = new FireModelClass;
+	if (!m_ModelSun)
+	{
+		return false;
+	}
+
+	result = m_ModelSun->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere1.txt", L"../Engine/data/fire01.dds", //square or cube
+		L"../Engine/data/noise01.dds", L"../Engine/data/alpha01.dds");
+
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the fourth model object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -678,7 +695,8 @@ bool GraphicsClass::Render()
 	// Setup the rotation and translation of the 1st model Sun.
 	if (onePress)
 	{
-		RenderPlanets(m_Model1, 10.0f, 0.0f, 1.0f, worldMatrix, viewMatrix, projectionMatrix);
+		//RenderPlanets(m_Model1, 10.0f, 0.0f, 1.0f, worldMatrix, viewMatrix, projectionMatrix);
+		RenderSun(10.0f, 0.0f, worldMatrix, viewMatrix, projectionMatrix);
 	}
 	
 	// Setup the rotation and translation of the 2nd model Mercury.
@@ -768,7 +786,6 @@ bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float tr
 	MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, orbitSpeed * orbitOffset));
 
-	// Render the 2nd model using the light shader.
 	model->Render(m_D3D->GetDeviceContext());
 
 	if (!renderSpecular)
@@ -788,6 +805,67 @@ bool GraphicsClass::RenderPlanets(ModelClass* model, float scaleAmount, float tr
 		return false;
 	}
 
+	return true;
+}
+
+bool GraphicsClass::RenderSun(float scaleAmount, float translateValue, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
+{
+	bool result;
+
+	//Variables for the fire 
+	XMFLOAT3 scrollSpeeds, scales;
+	XMFLOAT2 distortion1, distortion2, distortion3;
+	float distortionScale, distortionBias;
+	static float frameTime = 0.0f;
+
+
+	// Increment the frame time counter.
+	frameTime += 0.01f;
+	if (frameTime > 1000.0f)
+	{
+		frameTime = 0.0f;
+	}
+
+	// Set the three scrolling speeds for the three different noise textures.
+	scrollSpeeds = XMFLOAT3(1.3f, 2.1f, 2.3f);
+
+	// Set the three scales which will be used to create the three different noise octave textures.
+	scales = XMFLOAT3(1.0f, 2.0f, 3.0f);
+
+	// Set the three different x and y distortion factors for the three different noise textures.
+	distortion1 = XMFLOAT2(0.1f, 0.2f);
+	distortion2 = XMFLOAT2(0.1f, 0.3f);
+	distortion3 = XMFLOAT2(0.1f, 0.1f);
+
+	// The the scale and bias of the texture coordinate sampling perturbation.
+	distortionScale = 0.8f;
+	distortionBias = 0.5f;
+
+	// Setup the rotation and translation of the Sun model.
+	m_D3D->GetWorldMatrix(worldMatrix);
+
+	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixScaling(scaleAmount, scaleAmount, scaleAmount));// (1.0f, 1.0f, 1.0f));
+	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+	worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixTranslation(translateValue, translateValue, -translateValue));
+
+
+	// Turn on alpha blending for the fire transparency.
+	m_D3D->TurnOnAlphaBlending();
+
+	// Put the square model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	m_ModelSun->Render(m_D3D->GetDeviceContext());
+
+	// Render the square model using the fire shader.
+	result = m_ShaderManager->RenderFireShader(m_D3D->GetDeviceContext(), m_ModelSun->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+		m_ModelSun->GetTexture1(), m_ModelSun->GetTexture2(), m_ModelSun->GetTexture3(), frameTime, scrollSpeeds,
+		scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+	if (!result)
+	{
+		return false;
+	}
+
+	// Turn off alpha blending.
+	m_D3D->TurnOffAlphaBlending();
 	return true;
 }
 
