@@ -215,6 +215,15 @@ bool GraphicsClass::InitializePlanets(HINSTANCE hinstance, HWND hwnd, int screen
 		return false;
 	}
 
+	m_ModelBumpEarth = new BumpModelClass;
+	result = m_ModelBumpEarth->Initialize(m_D3D->GetDevice(), "../Engine/data/sphere1.txt", L"../Engine/data/EarthB.dds"
+		, L"../Engine/data/EarthBump.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the Earth Bump model object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the 5th model object.
 	m_Model5 = new ModelClass;
 	if (!m_Model5)
@@ -715,7 +724,31 @@ bool GraphicsClass::Render()
 	// Setup the rotation and translation of the 4th model Earth.
 	if (fourPress)
 	{
-		RenderPlanets(m_Model4, 3.0f, 90.0f, 0.90f, worldMatrix, viewMatrix, projectionMatrix);
+		if (renderSpecular)
+		{
+			RenderPlanets(m_Model4, 3.0f, 90.0f, 0.90f, worldMatrix, viewMatrix, projectionMatrix);
+		}
+		else //render earth using bump map
+		{
+			m_D3D->GetWorldMatrix(worldMatrix);
+			scale = XMMatrixScaling(3.0f, 3.0f, 3.0f);
+			worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+			worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationY(rotation));
+			translateMatrix = XMMatrixTranslation(90.0f, 0.0f, 0.0f);
+			worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+			MyAxis = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+			worldMatrix = XMMatrixMultiply(worldMatrix, XMMatrixRotationAxis(MyAxis, orbitSpeed * 0.90f));
+
+			m_ModelBumpEarth->Render(m_D3D->GetDeviceContext());
+
+			result = m_ShaderManager->RenderBumpMapShader(m_D3D->GetDeviceContext(), m_ModelBumpEarth->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+				m_ModelBumpEarth->GetColorTexture(), m_ModelBumpEarth->GetNormalMapTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+
+			if (!result)
+			{
+				return false;
+			}
+		}
 	}
 	
 	// Setup the rotation and translation of the 5th model Mars.

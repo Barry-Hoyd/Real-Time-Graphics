@@ -82,6 +82,7 @@ private:
 	ModelClass* m_Model10;
 	ModelClass* m_Model11;
 	ModelClass* m_Model12;
+	BumpModelClass* m_ModelBumpEarth;
 	FireModelClass* m_ModelSun;
 	SkyDomeClass* m_SkyDome;
 	
