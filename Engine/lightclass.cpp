@@ -82,3 +82,14 @@ float LightClass::GetSpecularPower()
 {
 	return m_specularPower;
 }
+
+void LightClass::SetPosition(float x, float y, float z)
+{
+	m_position = XMFLOAT4(x, y, z, 1.0f);
+	return;
+}
+
+XMFLOAT4 LightClass::GetPosition()
+{
+	return m_position;
+}

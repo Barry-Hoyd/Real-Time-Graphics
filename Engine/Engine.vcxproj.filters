@@ -181,6 +181,12 @@
     <None Include="fire.ps">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="pointlight.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="pointlight.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Engine.rc">

@@ -65,6 +65,8 @@
     <None Include="fire.vs" />
     <None Include="light.ps" />
     <None Include="light.vs" />
+    <None Include="pointlight.ps" />
+    <None Include="pointlight.vs" />
     <None Include="Skydome.ps" />
     <None Include="Skydome.vs" />
     <None Include="texture.ps" />

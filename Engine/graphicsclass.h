@@ -85,6 +85,7 @@ private:
 	BumpModelClass* m_ModelBumpEarth;
 	FireModelClass* m_ModelSun;
 	SkyDomeClass* m_SkyDome;
+	LightClass* m_Light1, * m_Light2, * m_Light3, * m_Light4;
 	
 };
 

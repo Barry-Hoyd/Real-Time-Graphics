@@ -27,7 +27,18 @@ bool ShaderManagerClass::Initialize(ID3D11Device* device, HWND hwnd)
 {
 	bool result;
 
+	m_LightShaderPoint = new LightShaderClass;
 	
+	if (!m_LightShaderPoint)
+	{
+		return false;
+	}
+	result = m_LightShaderPoint->InitializePoint(device, hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the pointlight shader object.", L"Error", MB_OK);
+		return false;
+	}
 
 	// Create the texture shader object.
 	m_TextureShader = new TextureShaderClass;
@@ -214,6 +225,21 @@ bool ShaderManagerClass::RenderFireShader(ID3D11DeviceContext* deviceContext, in
 	result = m_FireShader->Render(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, fireTexture, noiseTexture, alphaTexture, frameTime, scrollSpeeds, scales, distortion1, distortion2,
 		distortion3, distortionScale, distortionBias);
 
+	if (!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool ShaderManagerClass::RenderPointLights(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix,
+	XMMATRIX projectionMatrix, ID3D11ShaderResourceView* texture, XMFLOAT4 diffuseColor[],
+	XMFLOAT4 lightPosition[])
+{
+	bool result;
+
+	result = m_LightShaderPoint->RenderPointLights(deviceContext, indexCount, worldMatrix, viewMatrix, projectionMatrix, texture, diffuseColor, lightPosition);
 	if (!result)
 	{
 		return false;

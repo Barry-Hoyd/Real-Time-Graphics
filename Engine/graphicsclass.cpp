@@ -145,6 +145,50 @@ bool GraphicsClass::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, 
 	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetSpecularPower(128.0f);
 
+	// Create the first light object.
+	m_Light1 = new LightClass;
+	if (!m_Light1)
+	{
+		return false;
+	}
+
+	// Initialize the first light object.
+	m_Light1->SetDiffuseColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_Light1->SetPosition(-3.0f, 1.0f, 3.0f);
+
+	// Create the second light object.
+	m_Light2 = new LightClass;
+	if (!m_Light2)
+	{
+		return false;
+	}
+
+	// Initialize the second light object.
+	m_Light2->SetDiffuseColor(0.0f, 1.0f, 0.0f, 1.0f);
+	m_Light2->SetPosition(3.0f, 1.0f, 3.0f);
+
+	// Create the third light object.
+	m_Light3 = new LightClass;
+	if (!m_Light3)
+	{
+		return false;
+	}
+
+	// Initialize the third light object.
+	m_Light3->SetDiffuseColor(0.0f, 0.0f, 1.0f, 1.0f);
+	m_Light3->SetPosition(-3.0f, 1.0f, -3.0f);
+
+	// Create the fourth light object.
+	m_Light4 = new LightClass;
+	if (!m_Light4)
+	{
+		return false;
+	}
+
+	// Initialize the fourth light object.
+	m_Light4->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light4->SetPosition(3.0f, 1.0f, -3.0f);
+
 	InitializePlanets(hinstance, hwnd, screenWidth, screenHeight);
 
 
@@ -640,8 +684,22 @@ bool GraphicsClass::Render()
 	XMMATRIX scale;
 	XMVECTOR MyAxis;
 	XMFLOAT3 cameraPosition;
+	XMFLOAT4 diffuseColor[4];
+	XMFLOAT4 lightPosition[4];
 
 	bool result;
+
+	// Create the diffuse color array from the four light colors.
+	diffuseColor[0] = m_Light1->GetDiffuseColor();
+	diffuseColor[1] = m_Light2->GetDiffuseColor();
+	diffuseColor[2] = m_Light3->GetDiffuseColor();
+	diffuseColor[3] = m_Light4->GetDiffuseColor();
+
+	// Create the light position array from the four light positions.
+	lightPosition[0] = m_Light1->GetPosition();
+	lightPosition[1] = m_Light2->GetPosition();
+	lightPosition[2] = m_Light3->GetPosition();
+	lightPosition[3] = m_Light4->GetPosition();
 	
 	if (!stopOrbit)
 	{
@@ -700,6 +758,14 @@ bool GraphicsClass::Render()
 	worldMatrix = XMMatrixTranslation(cameraPosition.x, cameraPosition.y, cameraPosition.z);
 
 
+	/*m_D3D->GetWorldMatrix(worldMatrix);
+	scale = XMMatrixScaling(8.0f, 8.0f, 8.0f);
+	worldMatrix = XMMatrixMultiply(worldMatrix, scale);
+	translateMatrix = XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+	worldMatrix = XMMatrixMultiply(worldMatrix, translateMatrix);
+	m_Model2->Render(m_D3D->GetDeviceContext());
+
+	result = m_ShaderManager->RenderPointLights(m_D3D->GetDeviceContext(), m_Model2->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model2->GetTexture(), diffuseColor, lightPosition);*/
 
 	// Setup the rotation and translation of the 1st model Sun.
 	if (onePress)
@@ -800,7 +866,7 @@ bool GraphicsClass::Render()
 	//all directions
 	RenderShips(m_Model11, 1.0f, 0.0f + cos(timeGetTime() / 500.0f) * 50, 0.0f + cos(timeGetTime() / 500.0f) * 10, 200.0f, worldMatrix, viewMatrix, projectionMatrix);
 	m_D3D->EndScene();
-
+	
 	return true;
 }
 

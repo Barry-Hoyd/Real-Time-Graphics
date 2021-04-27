@@ -36,12 +36,17 @@ public:
 	XMFLOAT4  GetSpecularColor();
 	float GetSpecularPower();
 
+	void SetPosition(float x, float y, float z);
+
+	XMFLOAT4 GetPosition();
+
 private:
 	XMFLOAT4  m_ambientColor;
 	XMFLOAT4  m_diffuseColor;
 	XMFLOAT3  m_direction;
 	XMFLOAT4  m_specularColor;
 	float m_specularPower;
+	XMFLOAT4 m_position;
 };
 
 #endif
